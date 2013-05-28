@@ -1,0 +1,5 @@
+<j:jelly xmlns:j="jelly:core">
+
+  <td>${it.getTimestamp()}</td>
+  <td><b>${it.getMetricValue()}</b></td>
+</j:jelly>

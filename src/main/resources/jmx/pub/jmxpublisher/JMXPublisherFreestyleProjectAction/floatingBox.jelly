@@ -1,0 +1,11 @@
+<j:jelly xmlns:j="jelly:core">
+	<div class="test-trend-caption">
+		<h2>Trending</h2>      
+		<br />
+      		<div></div>
+      		<br />
+      		<a href="JMXPublisher/">
+        		<img class="trend" src="JMXPublisher/summarizerGraphMainMetric"/>
+      		</a>
+    	</div>
+</j:jelly>

@@ -1,0 +1,31 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:l="/lib/layout">
+	<l:layout title="overview-layout" xmlns:jm="/jmx/pub/jmxpublisher/tags">
+    		<st:include it="${it.build}" page="sidepanel.jelly"/>
+    	    	<st:include page="/tabview/css.jelly" />
+    	    	<st:include page="/tabview/css2.jelly" />	     
+    		<l:main-panel>
+			<h1>Test</h1>
+      			<j:set var="report" value="${it.getReport()}"/>
+      			<h2>Report: ${report.getName()}</h2>
+			<j:forEach var="metricData" items="${report.metricData}">
+        			<h3>Metric Path: ${metricData.key}</h3>
+        			<table width="100%">
+          				<tr>
+            					<td width="50%">
+              						<table class="sortable source" border="1">
+                						<j:forEach var="metricValue" items="${metricData.value}">
+                    							<tr>	
+										<jm:summaryTable it="${metricValue}"/>
+                  							</tr>
+                						</j:forEach>
+              						</table>
+            					</td>
+            					<td width="50%">
+              						<img class="trend" src="./summarizerGraph?width=600&amp;height=440&amp;metricName=${metricData.key}" width="600" height="440" />
+            					</td>
+          				</tr>
+        			</table>
+      			</j:forEach>
+    		</l:main-panel>
+  	</l:layout>
+</j:jelly>

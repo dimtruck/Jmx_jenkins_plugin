@@ -1,0 +1,17 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
+	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+	<l:layout xmlns:g="/jmx/pub/jmxpublisher/tags">
+		<st:include it="${it.project}" page="sidepanel.jelly" />
+		<l:main-panel>
+		      	<h1>Global Test Report</h1>
+			<b>this: ${it.getAvailableMetricNames()}</b>
+			<j:set var="metricKeyList" value="${it.getAvailableMetricNames()}"/>
+			<j:forEach var="metricKey" items="${metricKeyList}">
+       				<center>
+       					<img class="trend" src="./summarizerGraphForMetric?width=600&amp;height=440&amp;metricName=${metricKey}" width="600" height="440" />
+       				</center>
+       				<br />
+      			</j:forEach>
+		</l:main-panel>
+	</l:layout>
+</j:jelly>
