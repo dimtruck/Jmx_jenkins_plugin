@@ -2,6 +2,7 @@ package jmx.pub.jmxpublisher;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class JmxOutputWriterParser {
 	private String jmxPath;
 	private PrintStream logger;
 	private BufferedReader br = null;
+	private File f = null;
 	
 	public JmxOutputWriterParser(String jmxPath,PrintStream logger){
 		this.jmxPath = jmxPath;
@@ -41,11 +43,12 @@ public class JmxOutputWriterParser {
 	public Map<String, List<Statistic>> fetchJmxData(){
 		return fetchJmxData(-1);
 	}
-	
+
 	public boolean isJmxPathValid(){
 		boolean isValid = false;
 		if(this.jmxPath != null){
 			try{
+				logger.println("attempting to open " + this.jmxPath);
 				br = null;
 				br = new BufferedReader(new FileReader(this.jmxPath));
 			}catch(IOException ioe){

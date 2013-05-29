@@ -19,8 +19,13 @@ Most performance-based plugins only capture response times.  There's a need to a
 **DEPENDENCIES**
 jmxtrans
 
+**CAVEATS**
+When you copy the jmx file, please note that the plugin currently reads only from master branch.  A fix for this in the works but for now, just either force builds on master or use another plugin to copy over to master server.
+
 **ROADMAP**
 <ul>
 <li style="text-decoration: line-through;">Publish jmx data on build completion</li>
 <li>Specify which jmx data to view in plugin</li>
+<li>Allow to build on master and slave</li>
+<li>Integrate with jmeter results (or performance plugin)</li>
 </ul>

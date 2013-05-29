@@ -2,6 +2,7 @@ package jmx.pub.jmxpublisher;
 
 import hudson.Launcher;
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.util.FormValidation;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
@@ -113,8 +114,10 @@ public class PluginPublisher extends Recorder {
     public boolean perform(AbstractBuild<?,?> build, Launcher launcher, BuildListener listener) 
     		throws InterruptedException, IOException {
     	PrintStream logger = listener.getLogger();
-    	logger.println("get results from build");
-    	JmxOutputWriterParser parser = new JmxOutputWriterParser(this.jmxPath, logger);
+    	logger.println("get results from build for file: " + this.jmxPath);
+	String directoryPath = build.getWorkspace().getRemote();
+	logger.println("the workspace directory is " + directoryPath);
+    	JmxOutputWriterParser parser = new JmxOutputWriterParser(directoryPath + File.separator + this.jmxPath, logger);
     	if(!parser.isJmxPathValid()){
         	logger.println("jmx path is invalid.");
     		if(build.getResult().isBetterOrEqualTo(hudson.model.Result.UNSTABLE))
