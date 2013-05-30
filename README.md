@@ -28,4 +28,6 @@ When you copy the jmx file, please note that the plugin currently reads only fro
 <li>Specify which jmx data to view in plugin</li>
 <li>Allow to build on master and slave</li>
 <li>Integrate with jmeter results (or performance plugin)</li>
+<li>Add options to filter what jmx attributes to track</li>
+<li>Add options to select which jmx attribute to view at trending (floating box)</li>
 </ul>
