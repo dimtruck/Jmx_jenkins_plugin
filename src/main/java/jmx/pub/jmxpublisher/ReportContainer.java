@@ -53,7 +53,7 @@ public class ReportContainer{
 	
 	public double getAverageForAllReports(List<Report> reports, String metricName){
 		if(reports != null && metricName != null){
-			long calculatedSum = 0;
+			float calculatedSum = 0;
 			if(reports.size() > 0){
 				for (Report report : reports)
 					calculatedSum += report.getAverageForMetric(metricName);

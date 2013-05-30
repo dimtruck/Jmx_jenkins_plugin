@@ -39,7 +39,7 @@ public class Report {
 	public double getAverageForMetric(String metricName){
 		if(metricData != null && metricName != null && this.metricData.containsKey(metricName)){
 			List<Statistic> statisticList = this.metricData.get(metricName);
-			long calculatedSum = 0;
+			float calculatedSum = 0;
 			if(statisticList.size() > 0){
 				for(Statistic statistic: statisticList)
 					calculatedSum+=statistic.getMetricValue();
@@ -51,10 +51,10 @@ public class Report {
 		return -1;
 	}
 
-	public long getMaxForMetric(String metricName){
+	public float getMaxForMetric(String metricName){
 		if(metricData != null && metricName != null && this.metricData.containsKey(metricName)){
 			List<Statistic> statisticList = this.metricData.get(metricName);
-			long max = 0;
+			float max = 0;
 			if(statisticList.size() > 0){
 				for(Statistic statistic: statisticList)
 					max = statistic.getMetricValue() > max ? statistic.getMetricValue(): max;
@@ -66,10 +66,10 @@ public class Report {
 		return -1;
 	}
 
-	public long getMinForMetric(String metricName){
+	public float getMinForMetric(String metricName){
 		if(metricData != null && metricName != null && this.metricData.containsKey(metricName)){
 			List<Statistic> statisticList = this.metricData.get(metricName);
-			long min = 0;
+			float min = 0;
 			if(statisticList.size() > 0){
 				for(Statistic statistic: statisticList)
 					min = statistic.getMetricValue() < min ? statistic.getMetricValue(): min;
