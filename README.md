@@ -36,4 +36,6 @@ When you copy the jmx file, please note that the plugin currently reads only fro
 		<li>List of metrics [textbox for metric] and it's threshold degradation [textbox]</li>
 	</ul>
 </li>
+<li>Add whether to graph attribute or not</li>
+<li>Ability to compare 2 builds</li>
 </ul>

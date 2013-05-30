@@ -7,10 +7,10 @@ public class Statistic implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 2548315722354424214L;
-	private long metricValue;
+	private float metricValue;
 	private long timestamp;
 
-	 public Statistic(long metricValue, long timestamp) {
+	 public Statistic(float metricValue, long timestamp) {
 	     this.metricValue = metricValue;
 	     this.timestamp = timestamp;
 	 }
@@ -18,7 +18,7 @@ public class Statistic implements Serializable {
 	/**
 	 * @return the metricValue
 	 */
-	public long getMetricValue() {
+	public float getMetricValue() {
 		return metricValue;
 	}
 

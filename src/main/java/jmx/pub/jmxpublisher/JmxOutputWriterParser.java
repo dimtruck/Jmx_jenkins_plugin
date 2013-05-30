@@ -90,7 +90,7 @@ public class JmxOutputWriterParser {
 					if(metricEntry != null && metricEntry.length == 3){
 						//expected entry
 						String metricName = metricEntry[0];
-						Statistic statistic = new Statistic(Long.parseLong(metricEntry[1]), Long.parseLong(metricEntry[2]));
+						Statistic statistic = new Statistic(Float.parseFloat(metricEntry[1]), Long.parseLong(metricEntry[2]));
 						if(!metricData.containsKey(metricName)){
 							List<Statistic> statisticList = new ArrayList<Statistic>();
 							statisticList.add(statistic);
