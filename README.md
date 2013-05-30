@@ -30,4 +30,10 @@ When you copy the jmx file, please note that the plugin currently reads only fro
 <li>Integrate with jmeter results (or performance plugin)</li>
 <li>Add options to filter what jmx attributes to track</li>
 <li>Add options to select which jmx attribute to view at trending (floating box)</li>
+<li>Allow user to fail builds if specified attributes degraded within a threshold
+	<ul>UI will include an option to set:
+		<li>Checkbox to fail build</li>
+		<li>List of metrics [textbox for metric] and it's threshold degradation [textbox]</li>
+	</ul>
+</li>
 </ul>
