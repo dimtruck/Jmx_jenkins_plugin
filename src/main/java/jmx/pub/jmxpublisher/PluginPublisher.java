@@ -4,6 +4,7 @@ import hudson.Launcher;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.util.FormValidation;
+import hudson.util.ListBoxModel;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.AbstractProject;
@@ -31,7 +32,9 @@ import java.io.IOException;
 public class PluginPublisher extends Recorder {
 
     private String jmxPath;
+    private boolean isThresholdUsed;
     private PrintStream logger;    
+    private JmxAttribute[] attributes;
     
     @Extension
     public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
@@ -55,6 +58,9 @@ public class PluginPublisher extends Recorder {
                 return FormValidation.error("Please set the jmx path");
         }
 
+	public DirectionEnum[] getThresholdDirection() {
+        	    return DirectionEnum.values();
+    	}
     }
 
     public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
@@ -64,8 +70,10 @@ public class PluginPublisher extends Recorder {
      * @param jmxPath - path
      */
     @DataBoundConstructor
-    public PluginPublisher(String jmxPath) {
+    public PluginPublisher(String jmxPath, String isThresholdUsed, JmxAttribute[] attributes) {
         this.jmxPath = jmxPath;
+        this.isThresholdUsed = Boolean.getBoolean(isThresholdUsed);
+        this.attributes = attributes;
     }
 
     @Override
@@ -103,6 +111,14 @@ public class PluginPublisher extends Recorder {
     public String getJmxPath() {
     	return jmxPath;
     }
+
+    public boolean getIsThresholdUsed(){
+	return isThresholdUsed;
+    }
+
+    public JmxAttribute[] getAttributes(){
+	return attributes;
+    }
     
     /***
      * loads the logger and adds the build action to the build.
@@ -139,16 +155,33 @@ public class PluginPublisher extends Recorder {
     	
     	logger.println("Iterate through all metrics in question.");
     	Set<String> metricNameSet = report.getMetricNames();
-    	for(String metricName : metricNameSet){
-        	double totalAverage = reports.getAverageForAllReports(previousReports, metricName);
-        	double currentAverage = report.getAverageForMetric(metricName);
-        	double previousAverage = reports.getAverageForPreviousReport(build, metricName);
+
+	//here, check if threshold has been set.  
+	//If it has been, then verify whether the metric name exists in the threshold list.  
+	//If it does, check if the threshold set is > % diff between changes
+
+	if(getIsThresholdUsed()){
+		List<JmxAttribute> metricsWithThreshold = new ArrayList<JmxAttribute>();
+		for(JmxAttribute thresholdAttribute : getAttributes()){
+			logger.println(thresholdAttribute.getName());
+			logger.println(thresholdAttribute.getPercent());
+			logger.println(thresholdAttribute.getThresholdDirection());
+			for(String metricName : metricNameSet)
+				if(metricName.toUpperCase().contains(thresholdAttribute.getName().toUpperCase()))
+					metricsWithThreshold.add(new JmxAttribute(metricName,thresholdAttribute.getPercent(),thresholdAttribute.getThresholdDirection()));
+	    	for(JmxAttribute attribute : metricsWithThreshold){
+	    	    	double totalAverage = reports.getAverageForAllReports(previousReports, attribute.getName());
+        		double currentAverage = report.getAverageForMetric(attribute.getName());
+        		double previousAverage = reports.getAverageForPreviousReport(build, attribute.getName());
         	
-        	if(currentAverage > previousAverage && build.getPreviousBuild() != null){
-        		//build.setResult(hudson.model.Result.FAILURE);
-        		logger.println(metricName + " got worse!");
-        	}
-    	}
+        		if(currentAverage > previousAverage && build.getPreviousBuild() != null){
+        			build.setResult(hudson.model.Result.FAILURE);
+        			logger.println(attribute.getName() + " got worse!");
+        		}
+    		}
+		}
+	}
+
     	
     	return true;
     }

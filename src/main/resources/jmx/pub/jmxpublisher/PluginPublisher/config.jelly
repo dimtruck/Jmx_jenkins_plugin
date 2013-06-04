@@ -4,5 +4,32 @@
 		description="${%description.jmx.pattern}">
 		<f:textbox field="jmxPath" />
 	</f:entry>
-  
+        <f:entry title="Turn on threshold" description="${%description.rt_threshold}">
+                <f:checkbox field="isThresholdUsed"/>
+        </f:entry>
+        <f:entry title="Attribute list" description="${%description.jmx.attributes}" help="help_threshold.html">
+		<j:set var="thresholdDirection" value="${it.getThresholdDirection}" /> 
+		<j:set var="thresholdDirection2" value="${descriptor.getThresholdDirection}" /> 
+				<span>${thresholdDirection}</span>
+				<span>${thresholdDirection2}</span>
+				<span>${it.getThresholdDirection}</span>
+				<span>${DirectionEnum.values}</span>
+				<span>${DirectionEnum.enumConstants}</span>
+               	<f:repeatable var="t" items="${instance.attributes}"  minimum="1">
+                        <div>
+                                <f:textbox title="Attribute name:" name="attributeName" value="${t.name}" />
+                                <f:textbox title="Threshold (%):" name="attributePercent" value="${t.percent}" />
+				<f:entry field="${t.thresholdDirection}">
+					<f:enum>${it.name}</f:enum>
+				</f:entry>
+				<select class="setting-input" name="thresholdDirection">
+                                	<j:forEach var="item" items="${DirectionEnum.enumConstants}" >
+                                    		<f:option value="${item}" selected="${item == t.thresholdDirection}">${item} 
+                                    		</f:option>
+                                	</j:forEach>
+                            	</select>
+        	        	<f:repeatableDeleteButton /><br/>
+                	</div>
+                </f:repeatable>
+        </f:entry>  
 </j:jelly>
