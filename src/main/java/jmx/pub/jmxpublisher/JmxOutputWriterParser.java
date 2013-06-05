@@ -2,11 +2,9 @@ package jmx.pub.jmxpublisher;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +31,6 @@ public class JmxOutputWriterParser {
 	private String jmxPath;
 	private PrintStream logger;
 	private BufferedReader br = null;
-	private File f = null;
 	
 	public JmxOutputWriterParser(String jmxPath,PrintStream logger){
 		this.jmxPath = jmxPath;

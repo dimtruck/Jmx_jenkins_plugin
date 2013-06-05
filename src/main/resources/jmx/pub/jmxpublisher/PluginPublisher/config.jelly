@@ -4,5 +4,27 @@
 		description="${%description.jmx.pattern}">
 		<f:textbox field="jmxPath" />
 	</f:entry>
-  
+        <f:entry title="Turn on threshold" description="${%description.rt_threshold}">
+                <f:checkbox field="isThresholdUsed"/>
+        </f:entry>
+        <f:entry title="Attribute list" description="${%description.jmx.attributes}" help="help_threshold.html">
+               	<f:repeatable var="attribute" items="${descriptor.attributes}"  minimum="1">
+                        <table width="100%">
+				<f:entry title="Attribute name">
+                                	<f:textbox name="attribute.name" value="${attribute.name}"/>
+				</f:entry>
+				<f:entry title="Attribute threshold">
+                                	<f:textbox name="attribute.percent" value="${attribute.percent}"/>
+				</f:entry>
+				<f:entry title="Threshold direction" field="thresholdDirectionEnums">
+					<f:select name="attribute.thresholdDirection" selected="${attribute.thresholdDirection}" />
+				</f:entry>
+				<f:entry title="">
+					<div align="right" class="repeatable-delete show-if-only" style="margin-left: 1em;">
+						<f:repeatableDeleteButton />
+					</div>
+				</f:entry>
+			</table>
+                </f:repeatable>
+        </f:entry>  
 </j:jelly>

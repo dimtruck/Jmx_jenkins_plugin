@@ -4,10 +4,7 @@ import hudson.model.*;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
-import hudson.remoting.jnlp.MainMenu;
 import hudson.util.ChartUtil;
-import hudson.util.ChartUtil.NumberOnlyBuildLabel;
-import hudson.util.ColorPalette;
 import hudson.util.DataSetBuilder;
 import hudson.util.Graph;
 import org.jfree.chart.ChartFactory;
@@ -17,7 +14,6 @@ import org.jfree.data.category.CategoryDataset;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
