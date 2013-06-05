@@ -5,7 +5,13 @@ public class JmxAttribute {
 	private Float percent;
 	private DirectionEnum thresholdDirection;
 
+	public JmxAttribute(){}
+
 	public JmxAttribute(String name, Float percent, DirectionEnum thresholdDirection){
+		System.out.println("in jmx attribute");
+		System.out.println(name);
+		System.out.println(percent);
+		System.out.println(thresholdDirection);
 		this.name = name;
 		this.percent = percent;
 		this.thresholdDirection = thresholdDirection;

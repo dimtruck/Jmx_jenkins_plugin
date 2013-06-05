@@ -5,11 +5,13 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+import hudson.util.CopyOnWriteList;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.AbstractProject;
 import hudson.tasks.Publisher;
 import hudson.tasks.BuildStepDescriptor;
+import hudson.tasks.BuildStep;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Recorder;
 import net.sf.json.JSONObject;
@@ -34,14 +36,20 @@ public class PluginPublisher extends Recorder {
     private String jmxPath;
     private boolean isThresholdUsed;
     private PrintStream logger;    
-    private JmxAttribute[] attributes;
+    private DirectionEnum directionEnum;
     
-    @Extension
     public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
+	private final CopyOnWriteList<JmxAttribute> attributes = new CopyOnWriteList<JmxAttribute>();
+    	private String thresholdDirectionEnums;
 
     	public DescriptorImpl(){
     		super(PluginPublisher.class);
-    	}
+    		load();
+	}
+
+	protected DescriptorImpl(Class<? extends Publisher> clazz){
+		super(clazz);
+	}
 
         public String getDisplayName() {
             return "JMX Publisher plugin";
@@ -51,18 +59,55 @@ public class PluginPublisher extends Recorder {
             return true;
         }
         
-        public FormValidation doValidateMetricsConfiguration(@QueryParameter String jmxPath){
+        public FormValidation doValidateMetricsConfiguration(
+		@QueryParameter String jmxPath){
             if(jmxPath != null)
                 return FormValidation.ok("Success");
             else
                 return FormValidation.error("Please set the jmx path");
         }
 
-	public DirectionEnum[] getThresholdDirection() {
-        	    return DirectionEnum.values();
-    	}
+	public JmxAttribute[] getAttributes() {
+	    return attributes.toArray(new JmxAttribute[0]);
+	}
+
+	public ListBoxModel doFillAttributeItems(){
+	    ListBoxModel m = new ListBoxModel();
+	    for(JmxAttribute attribute : PluginPublisher.DESCRIPTOR.getAttributes()){
+	       m.add(attribute.getName());
+	    }
+	    return m;
+	}
+
+	public ListBoxModel doFillThresholdDirectionEnumsItems(){
+		ListBoxModel m = new ListBoxModel();
+		for(DirectionEnum e : DirectionEnum.values())
+			m.add(e.description());
+		return m;
+	}
+
+	@Override
+	public boolean configure(StaplerRequest req, JSONObject formData) {
+	   attributes.replaceBy(req.bindParametersToList(JmxAttribute.class, "attribute."));
+	   save();
+	   return true;
+	}
+
+	@Override
+	public Publisher newInstance(StaplerRequest req, JSONObject data) {
+	    System.out.println("new instance is called here.");
+	    System.out.println(data);
+	    System.out.println(req);
+	    System.out.println(attributes);
+	    attributes.replaceBy(req.bindParametersToList(JmxAttribute.class, "attribute."));
+	    System.out.println("new instance - 2 - is called here.");
+	    System.out.println(attributes);
+	    save();
+	    return req.bindJSON(clazz, data);
+	}
     }
 
+    @Extension
     public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
 
     /***
@@ -70,10 +115,14 @@ public class PluginPublisher extends Recorder {
      * @param jmxPath - path
      */
     @DataBoundConstructor
-    public PluginPublisher(String jmxPath, String isThresholdUsed, JmxAttribute[] attributes) {
+    public PluginPublisher(String jmxPath, boolean isThresholdUsed) {
+	   System.out.println("in Plugin publisher");
+	   System.out.println(jmxPath + " path in Plugin publisher");
+	   System.out.println(isThresholdUsed + " threshold in Plugin publisher");
+	   System.out.println(DESCRIPTOR.getAttributes() + " attributes in Plugin publisher");
+	   System.out.println(((DESCRIPTOR.getAttributes() != null)?DESCRIPTOR.getAttributes().length : "null") + " attributes in Plugin publisher");
         this.jmxPath = jmxPath;
-        this.isThresholdUsed = Boolean.getBoolean(isThresholdUsed);
-        this.attributes = attributes;
+        this.isThresholdUsed = isThresholdUsed;
     }
 
     @Override
@@ -83,25 +132,24 @@ public class PluginPublisher extends Recorder {
     
     @Override
     public Action getProjectAction(AbstractProject<?,?> project) {
-    	if(project != null)
+    	if(project != null){
+    		ReportContainer container = new ReportContainer();
     		if(project.getBuilds().size() > 0){
-    			ReportContainer container = new ReportContainer();
     			Report report = container.getReportForBuild(project.getLastSuccessfulBuild());
     			if(report != null){
     				Set<String> metricNameSet = report.getMetricNames();
     				List<String> metricNameList = new ArrayList<String>();
     				for(String metricName: metricNameSet)
     					metricNameList.add(metricName);
-    				String metricName = (String)metricNameList.toArray()[0];
-    				return new JMXPublisherFreestyleProjectAction(project, metricName, metricNameList, container);
-    			} else{
-        			return new JMXPublisherFreestyleProjectAction(project, "None", new ArrayList<String>(), container);
-        		}
-    		} else{
-    			ReportContainer container = new ReportContainer();
-    			return new JMXPublisherFreestyleProjectAction(project, "None", new ArrayList<String>(), container);
-    		}
-    	return null;
+				if(metricNameList.size() > 0){
+    					String metricName = (String)metricNameList.toArray()[0];
+    					return new JMXPublisherFreestyleProjectAction(project, metricName, metricNameList, container);
+    				}
+			} 
+    		}	
+    		return new JMXPublisherFreestyleProjectAction(project, "None", new ArrayList<String>(), container);
+    	}
+	return null;
     }
 
     public BuildStepMonitor getRequiredMonitorService() {
@@ -117,9 +165,13 @@ public class PluginPublisher extends Recorder {
     }
 
     public JmxAttribute[] getAttributes(){
-	return attributes;
+	return DESCRIPTOR.getAttributes();
     }
-    
+   
+    public DirectionEnum getDirectionEnum(){
+	return directionEnum;
+    }
+ 
     /***
      * loads the logger and adds the build action to the build.
      * @param build - running build
@@ -159,10 +211,13 @@ public class PluginPublisher extends Recorder {
 	//here, check if threshold has been set.  
 	//If it has been, then verify whether the metric name exists in the threshold list.  
 	//If it does, check if the threshold set is > % diff between changes
-
+	logger.println("threshold: " + this.isThresholdUsed);
+	logger.println("attributes: " + DESCRIPTOR.getAttributes());
 	if(getIsThresholdUsed()){
+    	logger.println("Threshold is true.");
+    	logger.println("# of attributes." + ((DESCRIPTOR.getAttributes() != null)?DESCRIPTOR.getAttributes().length : "null") );
 		List<JmxAttribute> metricsWithThreshold = new ArrayList<JmxAttribute>();
-		for(JmxAttribute thresholdAttribute : getAttributes()){
+		for(JmxAttribute thresholdAttribute : DESCRIPTOR.getAttributes()){
 			logger.println(thresholdAttribute.getName());
 			logger.println(thresholdAttribute.getPercent());
 			logger.println(thresholdAttribute.getThresholdDirection());

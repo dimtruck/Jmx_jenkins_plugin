@@ -8,28 +8,23 @@
                 <f:checkbox field="isThresholdUsed"/>
         </f:entry>
         <f:entry title="Attribute list" description="${%description.jmx.attributes}" help="help_threshold.html">
-		<j:set var="thresholdDirection" value="${it.getThresholdDirection}" /> 
-		<j:set var="thresholdDirection2" value="${descriptor.getThresholdDirection}" /> 
-				<span>${thresholdDirection}</span>
-				<span>${thresholdDirection2}</span>
-				<span>${it.getThresholdDirection}</span>
-				<span>${DirectionEnum.values}</span>
-				<span>${DirectionEnum.enumConstants}</span>
-               	<f:repeatable var="t" items="${instance.attributes}"  minimum="1">
-                        <div>
-                                <f:textbox title="Attribute name:" name="attributeName" value="${t.name}" />
-                                <f:textbox title="Threshold (%):" name="attributePercent" value="${t.percent}" />
-				<f:entry field="${t.thresholdDirection}">
-					<f:enum>${it.name}</f:enum>
+               	<f:repeatable var="attribute" items="${descriptor.attributes}"  minimum="1">
+                        <table width="100%">
+				<f:entry title="Attribute name">
+                                	<f:textbox name="attribute.name" value="${attribute.name}"/>
 				</f:entry>
-				<select class="setting-input" name="thresholdDirection">
-                                	<j:forEach var="item" items="${DirectionEnum.enumConstants}" >
-                                    		<f:option value="${item}" selected="${item == t.thresholdDirection}">${item} 
-                                    		</f:option>
-                                	</j:forEach>
-                            	</select>
-        	        	<f:repeatableDeleteButton /><br/>
-                	</div>
+				<f:entry title="Attribute threshold">
+                                	<f:textbox name="attribute.percent" value="${attribute.percent}"/>
+				</f:entry>
+				<f:entry title="Threshold direction" field="thresholdDirectionEnums">
+					<f:select />
+				</f:entry>
+				<f:entry title="">
+					<div align="right" class="repeatable-delete show-if-only" style="margin-left: 1em;">
+						<f:repeatableDeleteButton />
+					</div>
+				</f:entry>
+			</table>
                 </f:repeatable>
         </f:entry>  
 </j:jelly>
