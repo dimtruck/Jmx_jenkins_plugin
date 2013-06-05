@@ -1,9 +1,8 @@
 package jmx.pub.jmxpublisher;
 
 public enum DirectionEnum {
-	INCREASE("Increased"), 
-	DECREASE("Decreases"),
-	NO_CHANGE("");
+	INCREASE("Increase"), 
+	DECREASE("Decrease");
 
 	private final String description;
 

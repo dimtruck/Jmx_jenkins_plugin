@@ -7,34 +7,33 @@ public class JmxAttribute {
 
 	public JmxAttribute(){}
 
-	public JmxAttribute(String name, Float percent, DirectionEnum thresholdDirection){
-		System.out.println("in jmx attribute");
-		System.out.println(name);
-		System.out.println(percent);
-		System.out.println(thresholdDirection);
+	public JmxAttribute(String name, Float percent, String thresholdDirection){
 		this.name = name;
 		this.percent = percent;
-		this.thresholdDirection = thresholdDirection;
+		this.thresholdDirection = DirectionEnum.valueOf(thresholdDirection.toUpperCase());
 	}
 
-	public DirectionEnum getThresholdDirection(){
-		return thresholdDirection;
+	public String getThresholdDirection(){
+		return thresholdDirection.description();
 	}
 
-	public void setThresholdDirection(DirectionEnum thresholdDirection){
-		this.thresholdDirection = thresholdDirection;
+	public void setThresholdDirection(String thresholdDirection){
+		System.out.println(thresholdDirection);
+		this.thresholdDirection = DirectionEnum.valueOf(thresholdDirection.toUpperCase());
 	}
 	
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
+		System.out.println(name);
 		this.name = name;
 	}
 	public Float getPercent() {
 		return percent;
 	}
 	public void setPercent(Float percent) {
+		System.out.println(percent);
 		this.percent = percent;
 	}
 }

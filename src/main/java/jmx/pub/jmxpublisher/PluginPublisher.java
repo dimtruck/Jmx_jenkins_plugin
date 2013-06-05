@@ -95,15 +95,13 @@ public class PluginPublisher extends Recorder {
 
 	@Override
 	public Publisher newInstance(StaplerRequest req, JSONObject data) {
-	    System.out.println("new instance is called here.");
-	    System.out.println(data);
-	    System.out.println(req);
-	    System.out.println(attributes);
 	    attributes.replaceBy(req.bindParametersToList(JmxAttribute.class, "attribute."));
-	    System.out.println("new instance - 2 - is called here.");
-	    System.out.println(attributes);
 	    save();
 	    return req.bindJSON(clazz, data);
+	}
+
+	public DirectionEnum[] getThresholdDirectionEnums(){
+		return DirectionEnum.values();
 	}
     }
 
@@ -214,8 +212,8 @@ public class PluginPublisher extends Recorder {
 	logger.println("threshold: " + this.isThresholdUsed);
 	logger.println("attributes: " + DESCRIPTOR.getAttributes());
 	if(getIsThresholdUsed()){
-    	logger.println("Threshold is true.");
-    	logger.println("# of attributes." + ((DESCRIPTOR.getAttributes() != null)?DESCRIPTOR.getAttributes().length : "null") );
+    		logger.println("Threshold is true.");
+    		logger.println("# of attributes." + ((DESCRIPTOR.getAttributes() != null)?DESCRIPTOR.getAttributes().length : "null") );
 		List<JmxAttribute> metricsWithThreshold = new ArrayList<JmxAttribute>();
 		for(JmxAttribute thresholdAttribute : DESCRIPTOR.getAttributes()){
 			logger.println(thresholdAttribute.getName());
@@ -224,20 +222,31 @@ public class PluginPublisher extends Recorder {
 			for(String metricName : metricNameSet)
 				if(metricName.toUpperCase().contains(thresholdAttribute.getName().toUpperCase()))
 					metricsWithThreshold.add(new JmxAttribute(metricName,thresholdAttribute.getPercent(),thresholdAttribute.getThresholdDirection()));
-	    	for(JmxAttribute attribute : metricsWithThreshold){
-	    	    	double totalAverage = reports.getAverageForAllReports(previousReports, attribute.getName());
-        		double currentAverage = report.getAverageForMetric(attribute.getName());
-        		double previousAverage = reports.getAverageForPreviousReport(build, attribute.getName());
-        	
-        		if(currentAverage > previousAverage && build.getPreviousBuild() != null){
-        			build.setResult(hudson.model.Result.FAILURE);
-        			logger.println(attribute.getName() + " got worse!");
-        		}
+		    	for(JmxAttribute attribute : metricsWithThreshold){
+		    	    	double totalAverage = reports.getAverageForAllReports(previousReports, attribute.getName());
+        			double currentAverage = report.getAverageForMetric(attribute.getName());
+        			double previousAverage = reports.getAverageForPreviousReport(build, attribute.getName());
+				logger.println("compare for: " + attribute.getThresholdDirection());
+        			if(DirectionEnum.valueOf(attribute.getThresholdDirection().toUpperCase()) == DirectionEnum.INCREASE){
+					logger.println("check increase: " + currentAverage + " versus " + previousAverage);
+					logger.println("check increase: " + currentAverage + " versus " + (previousAverage * (attribute.getPercent() / 100) + previousAverage));
+ 		       			if(currentAverage > (previousAverage * (attribute.getPercent() / 100) + previousAverage) && 
+							build.getPreviousBuild() != null){
+        					build.setResult(hudson.model.Result.FAILURE);
+        					logger.println(attribute.getName() + " got worse!");
+					}	
+				}else {
+					logger.println("check decrease: " + currentAverage + " versus " + previousAverage);
+					logger.println("check decrease: " + previousAverage + " versus " + (currentAverage * (attribute.getPercent() / 100) + currentAverage));
+ 		       			if(previousAverage > (currentAverage * (attribute.getPercent() / 100) + currentAverage) && 
+							build.getPreviousBuild() != null){
+        					build.setResult(hudson.model.Result.FAILURE);
+        					logger.println(attribute.getName() + " got worse!");
+					}	
+        			}
+			}
     		}
-		}
 	}
-
-    	
     	return true;
     }
 }
