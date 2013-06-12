@@ -1,7 +1,7 @@
 Jmx_jenkins_plugin
 ==================
 
-Gerrit test6
+Gerrit test7
 
 Plugin to view jmx output in Jenkins
 
