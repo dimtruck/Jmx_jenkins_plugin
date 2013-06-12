@@ -1,7 +1,7 @@
 Jmx_jenkins_plugin
 ==================
 
-Greg is awesome
+Greg is awesome!
 
 Gerrit test7
 
