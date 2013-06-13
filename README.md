@@ -1,7 +1,8 @@
 Jmx_jenkins_plugin
 ==================
 
-Gerrit test
+This is an exmaple for the group.  Please don't fail 
+
 
 Plugin to view jmx output in Jenkins
 
