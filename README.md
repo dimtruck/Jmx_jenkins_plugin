@@ -1,7 +1,7 @@
 Jmx_jenkins_plugin
 ==================
 
-321Gerrit test18
+Gerrit test
 
 Plugin to view jmx output in Jenkins
 
