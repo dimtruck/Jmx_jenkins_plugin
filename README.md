@@ -1,6 +1,6 @@
 Jmx_jenkins_plugin
 ==================
-
+test
 This is an exmaple for the group.  Please don't fail 
 
 
